@@ -16,9 +16,7 @@ spec:
         app: webapp
     spec:
       containers:
-      - image: nginx:latest
-      # - image: registry.gitlab.com/gitlab-examples/nginx
-      # - image: gcr.io/cloud-builders/nginx
+      - image: registry.gitlab.com/gitlab-examples/nginx
         name: nginx
         env:
           - name: DOMAIN
