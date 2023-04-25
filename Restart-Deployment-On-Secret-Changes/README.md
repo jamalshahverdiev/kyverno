@@ -5,6 +5,7 @@
 ### Give an access to the Kyverno `ServiceAccount` after which our deployment will be restarted when some key of the secret with name `webapp-secret` will be changed
 
 ```bash
+$ kubectl create ns check-kyverno
 $ kubectl apply -f cr-crb.yaml
 ```
 
