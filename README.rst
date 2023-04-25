@@ -11,6 +11,7 @@ Before starting to test something we must install Kyverno to our Kubernetes clus
    $ helm repo add kyverno https://kyverno.github.io/kyverno/
    $ helm repo update
    $ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --version 2.6.5 --set replicaCount=1
+   $ kubectl create ns check-kyverno
 
 To uninstall we can use the following command
 
