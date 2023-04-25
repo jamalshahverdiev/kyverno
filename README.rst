@@ -2,7 +2,8 @@
 In this repository I will store Policy and ClusterPolicy rules of Kyverno for different scenarios
 *************************************************************************************************
 
-* `Restart deployment pods when secret keys chaned,added or deleted  <https://github.com/jamalshahverdiev/kyverno/tree/main/Restart-Deployment-On-Secret-Changes>`_
+* `Restart deployment pods when secret keys chaned,added or deleted <https://github.com/jamalshahverdiev/kyverno/tree/main/Restart-Deployment-On-Secret-Changes>`_
+* `Synchronize secret imagepullsecrets to all namespaces <https://github.com/jamalshahverdiev/kyverno/tree/main/Sync-Secret-To-All-Namespaces>`_
 
 Before starting to test something we must install Kyverno to our Kubernetes cluster with Helm.
 
