@@ -2,7 +2,7 @@
 In this repository I will store Policy and ClusterPolicy rules of Kyverno for different scenarios
 *************************************************************************************************
 
-* `Restart deployment pods when secret keys chaned,added or deleted  <https://github.com/jamalshahverdiev/python-general-codes/tree/master/HaProxyRestAPI>`_
+* `Restart deployment pods when secret keys chaned,added or deleted  <https://github.com/jamalshahverdiev/kyverno/tree/main/Restart-Deployment-On-Secret-Changes>`_
 
 Before starting to test something we must install Kyverno to our Kubernetes cluster with Helm.
 
