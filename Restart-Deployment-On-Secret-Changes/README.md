@@ -24,3 +24,7 @@ $ kubectl get deployment -n check-kyverno webapp -o json | jq -r '.spec.template
   "deployment-version": "691392"
 }
 ```
+
+#### You can see the simulation as following
+
+![Simulation](https://github.com/jamalshahverdiev/kyverno/blob/main/Restart-Deployment-On-Secret-Changes/tmux-session-optimized.gif)
