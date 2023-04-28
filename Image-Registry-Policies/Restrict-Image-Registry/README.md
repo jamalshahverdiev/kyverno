@@ -1,6 +1,6 @@
 # Restrict usage of registry servers
 
-## This cluster policy blocks usage any of registry servers with exception `registry.gitlab.com` and `gcr.io` but it is not applied to the namespaces which starts with `kube*` and kyverno
+## This cluster policy blocks usage any of registry servers with exception `registry.gitlab.com` and `docker.io` but it is not applied to the namespaces which starts with `kube*` and kyverno
 
 ### Apply `ClusterPolicy` and `Deployment` (with wrong image) manifests
 
