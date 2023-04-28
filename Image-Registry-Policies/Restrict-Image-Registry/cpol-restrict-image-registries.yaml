@@ -34,4 +34,4 @@ spec:
       pattern:
         spec:
           containers:
-          - image: "registry.gitlab.com/* | gcr.io/*"
+          - image: "registry.gitlab.com/* | docker.io/*"

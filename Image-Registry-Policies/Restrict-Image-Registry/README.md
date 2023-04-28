@@ -12,7 +12,7 @@ $ kubectl apply -f deployment.yaml
 #### To test it we can use the following commands to change image in deployment
 
 ```bash
-$ kubectl -n check-kyverno patch deployment webapp --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value": "nginx:latest"}]'
+$ kubectl -n check-kyverno patch deployment webapp --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value": "docker.io/nginx:latest"}]'
 $ kubectl -n check-kyverno patch deployment webapp --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value": "registry.gitlab.com/gitlab-examples/nginx"}]'
 $ kubectl -n check-kyverno patch deployment webapp --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value": "gcr.io/cloud-builders/nginx"}]'
 ```
