@@ -19,4 +19,4 @@ $ kubectl -n check-kyverno patch deployment webapp --type='json' -p='[{"op": "re
 
 #### The simulation as following
 
-![Simulation](https://github.com/jamalshahverdiev/kyverno/blob/main/Restrict-Image-Registry/tmux-session-optimized.gif)
+![Simulation](https://github.com/jamalshahverdiev/kyverno/blob/main/Image-Registry-Policies/Restrict-Image-Registry/tmux-session-optimized.gif)
