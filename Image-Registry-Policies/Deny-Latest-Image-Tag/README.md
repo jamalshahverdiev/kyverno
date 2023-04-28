@@ -25,4 +25,4 @@ $ kubectl run application --image=docker.io/nginx:1.24.0 --namespace=check-kyver
 
 #### The simulation as following
 
-![Simulation](https://github.com/jamalshahverdiev/kyverno/blob/main/Image-Registry-Policies/Restrict-Image-Registry/tmux-session-optimized.gif)
+![Simulation](https://github.com/jamalshahverdiev/kyverno/blob/main/Image-Registry-Policies/Deny-Latest-Image-Tag/tmux-session-optimized.gif)
