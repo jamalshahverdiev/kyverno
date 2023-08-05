@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-forbiddenusers
+  # namespace: default
+  # namespace: check-kyverno
+  namespace: check-kyverno-policies
+spec:
+  template:
+    spec:
+      containers:
+      - name: job-forbiddenusers
+        image: busybox
+        command:
+        - /bin/sh
+        - -c
+        - echo "Hello, Kubernetes!" && sleep 3600
+      restartPolicy: Never
+  backoffLimit: 4

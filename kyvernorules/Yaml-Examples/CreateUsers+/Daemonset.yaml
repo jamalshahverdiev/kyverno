@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: daemonset-forbiddenusers
+  # namespace: default
+  # namespace: check-kyverno
+  namespace: check-kyverno-policies
+spec:
+  selector:
+    matchLabels:
+      name: daemonset-forbiddenusers
+  template:
+    metadata:
+      labels:
+        name: daemonset-forbiddenusers
+        team: devops
+    spec:
+      containers:
+      - name: daemonset-forbiddenusers
+        image: busybox
+        command:
+          - sleep
+          - "3600"

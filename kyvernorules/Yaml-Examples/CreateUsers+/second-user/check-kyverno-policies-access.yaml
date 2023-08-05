@@ -1,0 +1,33 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: check-kyverno-policies
+  name: resource-manager
+rules:
+- apiGroups: ["apps"]
+  resources: ["deployments", "daemonsets", "statefulsets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["batch"]
+  resources: ["jobs", "cronjobs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: resource-manager-binding
+  namespace: check-kyverno-policies
+subjects:
+- kind: ServiceAccount
+  name: second-user
+  namespace: default
+- kind: ServiceAccount
+  name: test-user
+  namespace: default
+roleRef:
+  kind: Role
+  name: resource-manager
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,33 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:background-controller:additional
+rules:
+- apiGroups: ["apps"]
+  resources: ["daemonsets", "deployments", "statefulsets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kyverno-background-controller-additional-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kyverno:background-controller:additional
+subjects:
+- kind: ServiceAccount
+  name: kyverno-background-controller
+  namespace: kyverno
+# - kind: ServiceAccount
+#   name: kyverno-admission-controller
+#   namespace: kyverno
+# - kind: ServiceAccount
+#   name: kyverno-cleanup-controller
+#   namespace: kyverno
+# - kind: ServiceAccount
+#   name: kyverno-cleanup-jobs
+#   namespace: kyverno
+# - kind: ServiceAccount
+#   name: kyverno-reports-controller
+#   namespace: kyverno

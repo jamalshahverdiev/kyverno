@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: example-statefulset
+  labels:
+    app: example-app
+    team: MyTeamName2
+spec:
+  serviceName: "example-service"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: example-app
+  template:
+    metadata:
+      labels:
+        app: example-app
+        # team: ""
+        team: MyTeamName2
+    spec:
+      containers:
+      - name: example-container
+        image: nginx:1.14.2

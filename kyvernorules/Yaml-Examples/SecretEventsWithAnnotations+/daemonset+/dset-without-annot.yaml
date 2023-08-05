@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: dset-without-annot
+  name: dset-without-annot
+  namespace: check-kyverno
+spec:
+  selector:
+    matchLabels:
+      app: dset-without-annot
+  template:
+    metadata:
+      labels:
+        app: dset-without-annot
+        team: cloud
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        env:
+          - name: DOMAIN
+            valueFrom:
+              secretKeyRef:
+                name: dset-secret-wout-annot
+                key: domain
+          - name: OWNER
+            valueFrom:
+              secretKeyRef:
+                name: dset-secret-wout-annot
+                key: owner
+          - name: USER
+            valueFrom:
+              secretKeyRef:
+                name: dset-secret-wout-annot
+                key: user
+          - name: CERT
+            valueFrom:
+              secretKeyRef:
+                name: dset-secret-wout-annot
+                key: certificate

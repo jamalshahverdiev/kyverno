@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: forbidden-vs-rule
+  # namespace: istio-forbidden
+  # namespace: check-kyverno
+spec:
+  hosts:
+  - "salam.com"  
+  # - "beta.opso.org"  
+  # - "dev.beta.opso.org"
+  http:
+  - match:
+    - uri:
+        prefix: "/test"
+    route:
+    - destination:
+        host: "test-service"
+        port:
+          number: 80

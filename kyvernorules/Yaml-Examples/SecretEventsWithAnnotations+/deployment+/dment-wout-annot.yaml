@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dment-wout-annot
+  namespace: check-kyverno
+  labels:
+    app: dment-wout-annot
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dment-wout-annot
+  template:
+    metadata:
+      labels:
+        app: dment-wout-annot
+        team: cloud
+    spec:
+      containers:
+      - name: app-1
+        image: nginx:1.21.3
+        env:
+          - name: SECRET_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: dment-secret-wout-annot
+                key: username
+          - name: SECRET_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: dment-secret-wout-annot
+                key: password

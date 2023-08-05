@@ -1,0 +1,27 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: authorization-policy-check
+spec:
+  validationFailureAction: enforce
+  background: false
+  rules:
+  - name: deny-unauthorized-access
+    match:
+      resources:
+        kinds:
+        - AuthorizationPolicy
+    validate:
+      message: "Deny create AuthorizationPolicy. Unauthorized access is not allowed."
+      deny:
+        conditions:
+          all:
+          - key: "{{request.object.spec.action}}"
+            operator: NotEquals
+            value: "ALLOW"
+          - key: "{{request.object.spec.rules[].to[].operation.paths[]}}"
+            operator: NotIn
+            value: ["allowedPath1", "allowedPath2"]  # Define your allowed paths here
+          - key: "{{request.object.spec.rules[].from[].source}}"
+            operator: NotIn
+            value: ["allowedSource1", "allowedSource2"]  # Define your allowed sources here

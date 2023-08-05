@@ -1,0 +1,19 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-hostnetwork-hostpid-sharing
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: validate-hostnetwork-hostpid
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Use of hostNetwork or hostPID is not allowed"
+      pattern:
+        spec:
+          =(hostNetwork): false
+          =(hostPID): "false"

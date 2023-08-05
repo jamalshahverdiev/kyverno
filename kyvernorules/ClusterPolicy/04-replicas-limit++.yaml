@@ -1,0 +1,55 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: limit-replicas
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: check-replica-limit-deployment-daemonset
+    match:
+      any:
+        - resources:
+            kinds:
+            - apps/v1/Deployment
+            - apps/v1/StatefulSet
+    context:
+    - name: namespaceMaxReplicas
+      apiCall:
+        urlPath: "/api/v1/namespaces/{{request.namespace}}"
+        jmesPath: "metadata.annotations.\"opso.info/max-replicas\" || '2'"
+    preconditions:
+      all:
+      - key: "{{ regex_match('.*-(dev|stable)$', '{{request.namespace}}') }}"
+        operator: Equals
+        value: true
+    validate:
+      message: "The number of replicas exceeds the limit defined in the namespace annotation or maximal value 2."
+      deny:
+        conditions:
+          - key: "{{request.object.spec.replicas}}"
+            operator: GreaterThan
+            value: "{{ namespaceMaxReplicas }}"
+  - name: check-replica-limit-hpa
+    match:
+      any:
+        - resources:
+            kinds:
+            - autoscaling/v2/HorizontalPodAutoscaler
+    context:
+    - name: namespaceMaxReplicas
+      apiCall:
+        urlPath: "/api/v1/namespaces/{{request.namespace}}"
+        jmesPath: "metadata.annotations.\"opso.info/max-replicas\" || '2'"
+    preconditions:
+      all:
+      - key: "{{ regex_match('.*-(dev|stable)$', '{{request.namespace}}') }}"
+        operator: Equals
+        value: true
+    validate:
+      message: "The number of replicas exceeds the limit defined in the namespace annotation or maximal value 2."
+      deny:
+        conditions:
+          - key: "{{request.object.spec.maxReplicas}}"
+            operator: GreaterThan
+            value: "{{ namespaceMaxReplicas }}"

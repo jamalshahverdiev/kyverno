@@ -1,0 +1,33 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-public-dns-eligible-update
+spec:
+  validationFailureAction: Audit
+  rules:
+  - name: check-vs-publicdns-eligible
+    match:
+      any: 
+        - resources:
+            kinds:
+            - networking.istio.io/v1beta1/VirtualService
+    preconditions:
+      all:
+      - key: "{{ request.object.spec.gateways || [] }}"
+        operator: AnyIn
+        value: ["istio-system/istio-ingressgateway-private"]
+      - key: "{{ request.operation }}"
+        operator: In
+        value: ["UPDATE", "CREATE"]
+    context:
+    - name: allowedPrivateHosts
+      apiCall:
+        urlPath: "/api/v1/namespaces/{{request.namespace}}"
+        jmesPath: "metadata.annotations.\"opso.info/allowed-private-hosts\" || ' '"
+    validate:
+      message: "Your VirtualService contains host {{ request.object.spec.hosts[] }} which not allowed in namespace `{{request.namespace}}` annotations. Remove the invalid hosts from VirtualService config or contact DevOps."
+      deny:
+        conditions:
+        - key: "{{ request.object.spec.hosts[] }}"
+          operator: AnyNotIn
+          value: "{{ allowedPrivateHosts | replace_all(@, ' ', '') | split(@, ',')}}"

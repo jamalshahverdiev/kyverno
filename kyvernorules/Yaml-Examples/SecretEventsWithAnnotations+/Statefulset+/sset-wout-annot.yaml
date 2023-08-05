@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sset-wout-annot
+  namespace: check-kyverno
+  labels:
+    app: sset-wout-annot
+spec:
+  serviceName: "statefulset-service"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sset-wout-annot
+  template:
+    metadata:
+      labels:
+        app: sset-wout-annot
+    spec:
+      containers:
+      - name: app
+        image: nginx:1.21.3
+        env:
+          - name: SECRET_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: sset-secret-wout-annot
+                key: username
+          - name: SECRET_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sset-secret-wout-annot
+                key: password

@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: prometheusrule-example
+  namespace: default
+spec:
+  groups:
+    - name: example-alerts
+      rules:
+        - alert: HighRequestLatency
+          # expr: job:request_latency_seconds:mean5m{job="myjob"} > 0.5
+          expr: kafka_consumergroup_current_offset{consumergroup=~"$consumergroup",topic=~"$topic",kubernetes_namespace=~"$namespace",cluster=~"$cluster"}[1m]
+          for: 10m
+          labels:
+            severity: page
+            salam: saqol
+          annotations:
+            summary: High request latency

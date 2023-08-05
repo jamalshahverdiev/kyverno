@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: test
+    team: dummyteam
+  name: check-hostpidnetwork
+  namespace: check-kyverno
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: test
+        team: dummyteam
+    spec:
+      # hostNetwork: true
+      # hostPID: true
+      containers:
+        - name: nginx
+          image: nginx

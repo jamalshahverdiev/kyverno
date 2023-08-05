@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: test-vs
+  namespace: test
+spec:
+  hosts:
+  - elmes.of
+  - opso.com
+  - dev.beta.opso.net
+  - salam.com
+  gateways:
+  - istio-system/istio-ingressgateway-public
+  http:
+  - route:
+    - destination:
+        host: myservice

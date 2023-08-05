@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: policy
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  action: ALLOW
+  rules:
+  - to:
+    - operation:
+        paths: ["/unallowedPath"]
+    from:
+    - source:
+        namespaces: ["unallowedSource"]

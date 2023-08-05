@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: test
+    team: dummyteam
+  name: check-hostpidnetwork-pod
+  namespace: check-kyverno
+spec:
+  # hostNetwork: true
+  # hostPID: true
+  containers:
+    - name: nginx
+      image: nginx

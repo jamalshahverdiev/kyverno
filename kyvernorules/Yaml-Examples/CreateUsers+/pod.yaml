@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-forbiddenusers
+  # namespace: check-kyverno
+  # namespace: default
+  namespace: check-kyverno-policies
+spec:
+  containers:
+  - name: pod-forbiddenusers
+    image: nginx

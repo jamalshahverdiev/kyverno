@@ -1,0 +1,43 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: prom-rule-check
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: check-unnecessary-symbols
+      match:
+        resources:
+          kinds:
+            - operator.victoriametrics.com/v1beta1/VMRule
+            - monitoring.coreos.com/v1/PrometheusRule
+      context:
+      - name: exprLeftCurlyBracketValue
+        variable: 
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, '{') | length(@)
+      - name: exprRightCurlyBracketValue
+        variable: 
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, '}') | length(@)
+      - name: exprLeftParenthesisValue
+        variable: 
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, '(') | length(@)
+      - name: exprRightParenthesisValue
+        variable: 
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, ')') | length(@)
+      - name: exprDoubleQuotesValue
+        variable: 
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, '\"') | length(@) | subtract(@, `1`) | modulo(@, `2`)
+      validate:
+        message: "Group {{request.object.spec.groups[].name}} with alert {{request.object.spec.groups[].rules[].alert}} has a wrong expr - unnecessary symbols"
+        deny:
+          conditions:
+            any:
+              - key: "{{ exprLeftCurlyBracketValue }}"
+                operator: NotEquals 
+                value: "{{ exprRightCurlyBracketValue }}"
+              - key: "{{ exprLeftParenthesisValue }}"
+                operator: NotEquals 
+                value: "{{ exprRightParenthesisValue }}"
+              - key: "{{ exprDoubleQuotesValue }}"
+                operator: NotEquals 
+                value: "0"

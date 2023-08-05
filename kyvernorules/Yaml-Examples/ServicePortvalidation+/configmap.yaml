@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: svc-port-name-validation-parameters
+  namespace: default
+data:
+  doc_link: "https://some.link"
+  port_pool_size: "50"
+  protocols: |
+    - name: grpc
+      port: 13000
+    - name: grpc-webfd
+      port: 13050
+    - name: http
+      port: 13100
+    - name: http2
+      port: 13150
+    - name: https
+      port: 13200
+    - name: mongo
+      port: 13250
+    - name: mysql
+      port: 13300
+    - name: redis
+      port: 13350
+    - name: tcp
+      port: 13400
+    - name: tls
+      port: 13450
+    - name: udp
+      port: 13500

@@ -1,0 +1,76 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-service-ports-http
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: check-http-service-ports
+    match:
+      resources:
+        kinds:
+        - Service
+    preconditions:
+      all:
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    validate:
+      message: "The service which starts with protocol name or with key `appProtocol` must be between specific port ranges. Please have a look https://some.domain.link"
+      foreach:
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13149
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13100
+            all:
+              - key: "{{ regex_match ('^http(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13149
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13100
+            all:
+              - key: "{{ element.appProtocol || '' }}"
+                operator: Equals
+                value: "http"
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13099
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13000
+            all:
+              - key: "{{ regex_match ('^grpc(-.+)?$', '{{element.name}}' ) }}"
+                operator: NotEquals
+                value: false
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13099
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13000
+            all:
+              - key: "{{ element.appProtocol || '' }}"
+                operator: Equals
+                value: "grpc"

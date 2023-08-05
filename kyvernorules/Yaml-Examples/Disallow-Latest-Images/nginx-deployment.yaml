@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: output-kyverno
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        team: cloud
+    spec:
+      initContainers:
+      - name: init-1
+        image: busybox:1.32
+        # image: busybox:latest
+        command: ['sh', '-c', 'echo "Init Container 1 is running"; sleep 5']
+      - name: init-2
+        image: busybox:latest
+        # image: busybox:1.32
+        command: ['sh', '-c', 'echo "Init Container 2 is running"; sleep 5']
+      containers:
+      - name: nginx
+        # image: nginx:1.14
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+      - name: busybox
+        # image: busybox:latest
+        image: busybox:1.32
+        command: ['sh', '-c', 'echo The app is running! && sleep 3600']

@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: block-user-for-ns
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: block-user-for-ns-rule
+    match:
+      resources:
+        kinds:
+        - Pod
+        - Deployment
+        - StatefulSet
+        - DaemonSet
+        - Job
+        - CronJob
+    validate:
+      message: "Deny deploy to namespace {{request.object.metadata.namespace}} for user {{request.userInfo.username}}"
+      deny:
+        conditions:
+          all:
+          - key: "{{request.userInfo.username}}"
+            operator: In
+            value: ["system:serviceaccount:default:test-user", "system:serviceaccount:default:second-user"]  # Replace with your list of matchUsers
+          - key: "{{request.object.metadata.namespace}}"
+            operator: In
+            value: ["default", "check-kyverno"]  # Replace with your list of forbiddenNamespaces

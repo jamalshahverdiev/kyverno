@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-service
+spec:
+  selector:
+    app: MyApp
+  ports:
+    # - name: ccc-1
+    # - name: 1-grpdc
+    - name: http-1
+      appProtocol: http
+    # - name: http-ds
+      # port: 13100
+      # port: 12999
+      port: 13149
+      # port: 13100
+    # - name: ddd-2
+    - name: 1-http
+    # - name: sasa-http
+      port: 13099
+      appProtocol: grpc
+      # port: 13150
+      # port: 13050

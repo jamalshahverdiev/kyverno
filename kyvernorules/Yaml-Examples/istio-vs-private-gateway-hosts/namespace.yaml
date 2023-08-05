@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+  #   ## opso.info/allowed-public-hosts: dev.beta.opso.net
+    opso.info/allowed-private-hosts: dev.beta.opso.net, opso.com, elmes.of
+  labels:
+    kubernetes.io/metadata.name: privateingress
+  name: privateingress
+spec:
+  finalizers:
+  - kubernetes

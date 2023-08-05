@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: daemonset-check-hostpidnetwork
+  namespace: check-kyverno
+spec:
+  selector:
+    matchLabels:
+      name: daemonset-check-hostpidnetwork
+  template:
+    metadata:
+      labels:
+        name: daemonset-check-hostpidnetwork
+        team: cloud
+    spec:
+      # hostNetwork: true
+      hostPID: true
+      containers:
+      - name: busybox
+        image: busybox
+        command:
+          - sleep
+          - "3600"

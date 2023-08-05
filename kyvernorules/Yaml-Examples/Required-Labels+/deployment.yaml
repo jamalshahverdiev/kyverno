@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-deployment
+  labels:
+    app: example-app
+    team: MyTeamName1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: example-app
+  template:
+    metadata:
+      labels:
+        app: example-app
+        # team: 
+        # team: ""
+        # team: 1MyTeamName
+        # team: MyTeamName1
+    spec:
+      containers:
+      - name: example-container
+        image: nginx:1.14.2

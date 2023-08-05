@@ -1,0 +1,36 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: istio-deny-vs-hosts
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: deny-forbidden-hosts-in-vs
+    match:
+      resources:
+        kinds:
+        - networking.istio.io/v1beta1/VirtualService
+    exclude:
+      resources:
+        namespaces:
+        - istio-*
+    validate:
+      message: "Your VirtualService {{request.object.metadata.name}} contains a reserved denied host. Remove it from VirtualService config or contact DevOps."
+      foreach:
+      - list: "request.object.spec.hosts[]"
+        deny:
+          conditions:
+            any:
+            - key: "{{element}}"
+              message: Denied host "{{element}}"
+              operator: In
+              value:
+              - "beta.opso.org"
+              - "beta.opso.net"
+              - "beta.opso.io"
+              - "dev.beta.opso.net"
+              - "dev.beta.opso.org"
+              - "prime.opso.net"
+              - "prime.opso.org"
+              - "prime.opso.io"

@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: private-vs
+  namespace: privateingress
+spec:
+  hosts:
+  - elmes.of
+  # - opso.com
+  # - dev.beta.opso.net
+  - salam.com
+  - saqol.com
+  gateways:
+  - istio-system/istio-ingressgateway-private
+  http:
+  - route:
+    - destination:
+        host: myservice

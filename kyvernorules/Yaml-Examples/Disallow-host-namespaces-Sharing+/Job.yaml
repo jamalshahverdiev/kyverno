@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-hostnetwork-pid
+  namespace: check-kyverno
+spec:
+  template:
+    spec:
+      # hostPID: true
+      # hostNetwork: true
+      containers:
+      - name: job-worker
+        image: busybox
+        command:
+        - /bin/sh
+        - -c
+        - echo "Hello, Kubernetes!" && sleep 3600
+      restartPolicy: Never
+  backoffLimit: 4

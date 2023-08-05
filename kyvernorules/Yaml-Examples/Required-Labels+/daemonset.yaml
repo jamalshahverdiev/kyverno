@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: example-daemonset
+  labels:
+    app: example-app
+    team: MyTeamName3
+spec:
+  selector:
+    matchLabels:
+      app: example-app
+  template:
+    metadata:
+      labels:
+        app: example-app
+        # team: ""
+        team: MyTeamName3
+    spec:
+      containers:
+      - name: example-container
+        image: nginx:1.14.2

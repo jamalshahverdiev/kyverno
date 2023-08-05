@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: deployment-forbiddenusers
+    team: cloud
+  name: deployment-forbiddenusers
+  # namespace: default
+  # namespace: check-kyverno
+  namespace: check-kyverno-policies
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deployment-forbiddenusers
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: deployment-forbiddenusers
+        team: cloud
+    spec:
+      containers:
+        - name: deployment-forbiddenusers
+          image: nginx

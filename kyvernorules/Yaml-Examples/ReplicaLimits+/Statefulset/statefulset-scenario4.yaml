@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev-test
+  annotations:
+    opso.info/max-replicas: "3"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: noncompliant-statefulset
+  namespace: dev-test
+spec:
+  serviceName: "nginx"
+  replicas: 4
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: k8s.gcr.io/nginx-slim:0.8

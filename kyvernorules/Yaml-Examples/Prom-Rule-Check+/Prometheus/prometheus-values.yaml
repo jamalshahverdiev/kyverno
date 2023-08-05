@@ -1,0 +1,14 @@
+etcd: false             # line 37
+# kubeScheduler: false    # line 53
+adminPassword: test123  # line 628
+kubeControllerManager:  # line 910
+  enabled: false
+kubeEtcd:               # line 1057
+  enabled: false
+kubeScheduler:          # line 1122
+  enabled: false
+serviceMonitorSelector: # line 2050
+  matchLabels: 
+    prometheus: devops
+commonLabels:           # line 27
+  prometheus: devops

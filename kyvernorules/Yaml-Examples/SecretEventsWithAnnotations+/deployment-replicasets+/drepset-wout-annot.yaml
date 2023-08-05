@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drepset-wout-annot
+  namespace: check-kyverno
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: drepset-wout-annot
+  template:
+    metadata:
+      labels:
+        app: drepset-wout-annot
+        team: cloud
+    spec:
+      containers:
+      - name: drepset-wout-annot
+        image: nginx:1.21.3
+        env:
+        - name: SECRET_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: drepset-secret-wout-annot
+              key: username
+        - name: SECRET_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: drepset-secret-wout-annot
+              key: password
