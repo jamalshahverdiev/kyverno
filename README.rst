@@ -16,7 +16,7 @@ Before starting to test something we must install Kyverno to our Kubernetes clus
    $ kubectl create ns check-kyverno
  
  Or
- .. code-block:: bash
+
    $ helm show values kyverno/kyverno --version 2.7.3 > custom-values.yaml
    $ helm install kyverno kyverno/kyverno -n kyverno --create-namespace --version 2.7.3 -f custom-values.yaml --dry-run > allinone.yaml
 
