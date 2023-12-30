@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: configmap-statefulset
+  namespace: check-kyverno
+  annotations:
+    kyverno.opso.lan/configmap_dorollout: "allow"
+  labels:
+    app: configmap-statefulset
+spec:
+  serviceName: "configmap-dment-ss"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: configmap-statefulset
+  template:
+    metadata:
+      labels:
+        app: configmap-statefulset
+    spec:
+      containers:
+      - name: configmap-ss-container
+        image: nginx:latest
+        env:
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: configmap-ds-dment-ss
+              key: DB_PORT

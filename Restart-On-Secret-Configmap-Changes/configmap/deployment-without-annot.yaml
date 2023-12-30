@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configmap-dment-without-annot
+  namespace: check-kyverno
+  # annotations:
+  #   kyverno.opso.lan/configmap_dorollout: "allow"
+  labels:
+    app: configmap-dment-without-annot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configmap-dment-without-annot
+  template:
+    metadata:
+      labels:
+        app: configmap-dment-without-annot
+    spec:
+      containers:
+      - name: configmap-dment-container
+        image: nginx:latest
+        env:
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: configmap-ds-dment-ss
+              key: LOG_LEVEL

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: configmap-daemonset
+  namespace: check-kyverno
+  annotations:
+    kyverno.opso.lan/configmap_dorollout: "allow"
+  labels:
+    name: configmap-daemonset
+spec:
+  selector:
+    matchLabels:
+      name: configmap-daemonset
+  template:
+    metadata:
+      labels:
+        name: configmap-daemonset
+    spec:
+      containers:
+      - name: configmap-ds-container
+        image: nginx:latest
+        env:
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: configmap-ds-dment-ss
+              key: LOG_LEVEL
