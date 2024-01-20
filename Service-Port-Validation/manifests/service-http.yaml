@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-service
+  namespace: check-kyverno
+spec:
+  selector:
+    app: MyApp
+  ports:
+    - name: http-1      
+      port: 13149       # 13100-13149
+    - name: http-salam
+      port: 15000       # 13100-13149

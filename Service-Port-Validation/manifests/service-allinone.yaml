@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: allinone
+  namespace: check-kyverno
+spec:
+  selector:
+    app: kyvernocheck
+  ports:
+    - name: grpc-salam
+      port: 13010     # 13000-13049
+    - name: grpc-web-salam
+      port: 13060     # 13050-13099
+    - name: http-ds
+      port: 13110     # 13100-13149
+    - name: http2-ds
+      port: 13160     # 13150-13199
+    - name: https-ds
+      port: 13210     # 13200-13249
+    - name: mongo-ds
+      port: 13260     # 13250-13299
+    - name: mysql-ds
+      port: 13310     # 13300-13349
+    - name: redis-ds
+      port: 13360     # 13350-13399
+    - name: tcp-ds
+      port: 13410     # 13400-13449
+    - name: tls-ds
+      port: 13460     # 13450-13499
+    - name: udp-ds
+      port: 13510     # 13500-13549
+
+

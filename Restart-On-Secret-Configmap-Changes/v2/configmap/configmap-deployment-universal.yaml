@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configmap-deployment-universal
+  namespace: check-kyverno
+  labels:
+    app: configmap-deployment-universal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configmap-deployment-universal
+  template:
+    metadata:
+      labels:
+        app: configmap-deployment-universal
+    spec:
+      containers:
+      - name: configmap-third-container
+        image: nginx:latest
+        env:
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: configmap-ds-dment-ss
+              key: LOG_LEVEL
+      - name: configmap-fourth-container
+        image: alpine
+        command: ["sh", "-c", "while :; do echo 'Mounted ConfigMap'; sleep 10; done"]
+        volumeMounts:
+        - name: config-volume
+          mountPath: "/etc/config"
+      volumes:
+      - name: config-volume
+        configMap:
+          name: configmap-ds-dment-ss-mount

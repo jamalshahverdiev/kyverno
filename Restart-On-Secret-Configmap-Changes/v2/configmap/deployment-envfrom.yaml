@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configmap-dment-envfrom
+  namespace: check-kyverno
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configmap-dment-envfrom
+  template:
+    metadata:
+      labels:
+        app: configmap-dment-envfrom
+    spec:
+      containers:
+      - name: configmap-dment-envfrom
+        image: nginx
+        envFrom:
+        - configMapRef:
+            name: configmap-envfrom

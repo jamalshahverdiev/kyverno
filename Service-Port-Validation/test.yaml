@@ -1,0 +1,30 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: service-port-validation-test
+policies:
+  - clusterpolicy.yaml
+resources:
+  - manifests/service-allinone.yaml
+  - manifests/service-grpc.yaml
+  - manifests/service-http.yaml
+results:
+  - policy: validate-service-ports
+    rule: check-service-ports-protocols
+    resources:
+      - check-kyverno/allinone
+    kind: Service
+    result: pass 
+  - policy: validate-service-ports
+    rule: check-service-ports-protocols
+    resources:
+      - check-kyverno/grpc-service
+    kind: Service
+    result: pass 
+  - policy: validate-service-ports
+    rule: check-service-ports-protocols
+    resources:
+      - check-kyverno/http-service
+    kind: Service
+    result: fail 
+     

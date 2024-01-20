@@ -1,0 +1,27 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-service-name-prefix
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: check-service-name-prefix
+    match:
+      resources:
+        kinds:
+          - Service
+    exclude:
+      resources:
+        namespaces:
+        - argocd-system
+    validate:
+      message: "The service name must start with one of the following prefixes: grpc, http, http2, https, mongo, redis, tcp, tls, udp."
+      foreach:
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            all:
+              - key: "{{regex_match('^grpc|http|http2|https|mongo|mysql|redis|tcp|tls|udp(-.+)?$', '{{element.name}}')}}"
+                operator: Equals
+                value: false

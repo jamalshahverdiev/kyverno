@@ -1,0 +1,23 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: service-name-prefix-test
+policies:
+  - clusterpolicy.yaml
+resources:
+  - manifests/valid-service-grpc.yaml  
+  - manifests/invalid-service-xyz.yaml 
+results:
+  - policy: validate-service-name-prefix
+    rule: check-service-name-prefix
+    resources:
+      - check-kyverno/valid-service-grpc
+    kind: Service
+    result: pass 
+  - policy: validate-service-name-prefix
+    rule: check-service-name-prefix
+    resources:
+      - check-kyverno/invalid-service-xyz
+    kind: Service
+    result: fail 
+     

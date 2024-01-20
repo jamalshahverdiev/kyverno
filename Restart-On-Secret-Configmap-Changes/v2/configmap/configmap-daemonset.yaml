@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    name: configmap-daemonset
+  name: configmap-daemonset
+  namespace: check-kyverno
+spec:
+  selector:
+    matchLabels:
+      name: configmap-daemonset
+  template:
+    metadata:
+      labels:
+        name: configmap-daemonset
+    spec:
+      containers:
+      - env:
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              key: LOG_LEVEL
+              name: configmap-ds-dment-ss
+        image: nginx:latest
+        imagePullPolicy: Always
+        name: configmap-ds-container
