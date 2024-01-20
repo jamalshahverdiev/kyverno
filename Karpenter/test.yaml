@@ -1,0 +1,23 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: karpenter-do-not-evict-test
+policies:
+  - clusterpolicy.yaml
+resources:
+  - manifests/cronjob.yaml  
+  - manifests/job.yaml 
+results:
+  - policy: add-karpenter-donot-evict
+    rule: do-not-evict-cronjobs
+    resources:
+      - check-kyverno/sample-cronjob
+    kind: CronJob
+    result: pass 
+  - policy: add-karpenter-donot-evict
+    rule: do-not-evict-jobs
+    resources:
+      - check-kyverno/sample-job
+    kind: Job
+    result: pass 
+     
