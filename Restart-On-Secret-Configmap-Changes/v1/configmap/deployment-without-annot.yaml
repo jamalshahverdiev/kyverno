@@ -3,8 +3,8 @@ kind: Deployment
 metadata:
   name: configmap-dment-without-annot
   namespace: check-kyverno
-  # annotations:
-  #   kyverno.opso.lan/configmap_dorollout: "allow"
+  annotations:
+    kyverno.opso.lan/configmap_dorollout: "allow"
   labels:
     app: configmap-dment-without-annot
 spec:

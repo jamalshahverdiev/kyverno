@@ -6,7 +6,8 @@ metadata:
   annotations:
     kyverno.opso.lan/read: "allow"
 data:
-  USEER: "info"
+  USER: "info"
+  US: "info"
   LOG_LEVEL: "info"
   DB_HOST: "localhost"
   DB_PORT: "5432"
