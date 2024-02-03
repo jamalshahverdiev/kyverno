@@ -1,0 +1,30 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+globalValues:
+  chartVersion: 3.0.19
+policies:
+  - name: min-chart-version
+    resources:
+      - name: deployment-without-chart-version
+        values:
+          request.object.metadata.annotations.chart: 3.0.19
+      - name: statefulset-without-chart-version
+        values:
+          request.object.metadata.annotations.chart: 3.0.19
+      - name: virtualservice-without-chart-version
+        values:
+          request.object.metadata.annotations.chart: 3.0.19
+      - name: cronjob-without-chart-version
+        values:
+          request.object.metadata.annotations.chart: 3.0.19
+      - name: job-without-chart-version
+        values:
+          request.object.metadata.annotations.chart: 3.0.19
+      - name: authorizationpolicy-without-chart-version
+        values:
+          request.object.metadata.annotations.chart: 3.0.19
+      - name: configmap-without-chart-version
+        values:
+          request.object.metadata.annotations.chart: 3.0.19

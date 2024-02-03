@@ -1,0 +1,79 @@
+---
+# Source: kyverno/templates/02-k8s-private-dns-eligible-update-prod.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-private-dns-eligible-update-prod
+spec:
+  background: false
+  validationFailureAction: Audit
+  rules:
+  - name: check-vs-private-dns-eligible
+    match:
+      any:
+        - resources:
+            kinds:
+            - networking.istio.io/v1beta1/VirtualService
+    exclude:
+      resources:
+        # Exclude namespaces which defined in the values defined under '.excludeNamespaces'
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt
+    preconditions:
+      # The purpose of this rule to block and resource with kind `VirtualService` if the use Gateway object defined in the values
+      # If the domain defined in the VirtualService hosts list will be present under the namespace(this is VS NS) annotation value of the namespace the object will be valid
+      # If the domain defined in the VirtualService hosts will not be presend under namespace(this is VS NS) annotation then it will be blocked
+      all:
+      - key: "{{ request.object.spec.gateways || [] }}"
+        operator: AnyIn
+        value: ["istio-system/istio-ingressgateway-private"]
+      - key: "{{ request.operation }}"
+        operator: Equals
+        value: "UPDATE"
+    context:
+    - name: allowedPrivateHosts
+      apiCall:
+        urlPath: "/api/v1/namespaces/{{request.namespace}}"
+        method: GET
+        jmesPath: "metadata.annotations.\"opso.lan/allowed-private-hosts\" || ' '"
+    validate:
+      message: "Your VirtualService contains host {{ request.object.spec.hosts[] }} which not allowed in namespace `{{request.namespace}}` annotations. Follow this document https://opso.lan to remove/add the hosts from VirtualService config and contact DevOps."
+      deny:
+        conditions:
+        - key: "{{ request.object.spec.hosts[] }}"
+          operator: AnyNotIn
+          value: "{{ allowedPrivateHosts | replace_all(@, ' ', '') | split(@, ',') }}"

@@ -1,0 +1,50 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: required-labels-test
+policies:
+  - ../../policies/06-k8s-required-labels.yaml
+resources:
+  - manifests/deployment-with-required-label.yaml
+  - manifests/deployment-without-required-label.yaml
+  - manifests/statefulset-with-required-label.yaml
+  - manifests/statefulset-without-required-label.yaml
+  - manifests/daemonset-with-required-label.yaml
+  - manifests/daemonset-without-required-label.yaml
+results:
+  - policy: required-labels
+    rule: check-required-labels
+    resources:
+      - check-kyverno/deployment-with-required-label
+    kind: Deployment
+    result: pass
+  - policy: required-labels
+    rule: check-required-labels
+    resources:
+      - check-kyverno/deployment-without-required-label
+    kind: Deployment
+    result: fail
+  - policy: required-labels
+    rule: check-required-labels
+    resources:
+      - check-kyverno/daemonset-with-required-label
+    kind: DaemonSet
+    result: pass
+  - policy: required-labels
+    rule: check-required-labels
+    resources:
+      - check-kyverno/daemonset-without-required-label
+    kind: DaemonSet
+    result: fail
+  - policy: required-labels
+    rule: check-required-labels
+    resources:
+      - check-kyverno/statefulset-with-required-label
+    kind: StatefulSet
+    result: pass
+  - policy: required-labels
+    rule: check-required-labels
+    resources:
+      - check-kyverno/statefulset-without-required-label
+    kind: StatefulSet
+    result: fail

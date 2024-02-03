@@ -1,0 +1,102 @@
+---
+# Source: kyverno/templates/07-prom-rule-check.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: prom-rule-check
+spec:
+  background: false
+  validationFailureAction: Enforce
+  rules:
+    - name: check-unnecessary-symbols
+      match:
+        resources:
+          kinds:
+            - operator.victoriametrics.com/v1beta1/VMRule
+            - monitoring.coreos.com/v1/PrometheusRule
+      preconditions:
+        any:
+        - key: "{{ request.operation }}"
+          operator: NotEquals
+          value: DELETE
+      exclude:
+        resources:
+          # Exclude namespaces which defined in the values defined under '.excludeNamespaces'
+          namespaces:
+          - argocd-system
+          - cert-manager
+          - elastic-system
+          - events-exporter
+          - external-dns
+          - gatekeeper-system
+          - gitlab-runner
+          - istio-*
+          - jaeger-prod
+          - kafka-system
+          - keda
+          - kube-*
+          - kubecost
+          - kubecost-mgmt
+          - kyverno
+          - kubecost
+          - kubecost-*
+          - logging
+          - monitoring-prod
+          - oauth2-proxy-system
+          - path-router-operator-system
+          - recut
+          - elastic-dev
+          - vault-system
+          - velero-prod
+          - k8ssandra-operator
+          - temporal-operator
+          - cloud-temporal-*
+          - cassandra
+          - cassandra-tls
+          - temporal
+          - data-kafka-*
+          - shared-kafka-*
+          - trivy-system-*
+          - sentry-mgmt
+      context:
+      # The purpose of this ClusterPolicy rule to block kinds as 'VMRule' and 'PrometheusRule' if inside of the 'request.object.spec.groups[].rules[].expr'
+      # value the symbols like as '{', '(' and '"' will not be equal to each other. I mean When we open block them we must close this. Rule search content of
+      # 'expr' key and we didn't wrote correct syntax it will not be passed to Kubernetes cluster
+      - name: exprLeftSquareBracketValue
+        variable:
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, '[') | length(@)
+      - name: exprRightSquareBracketValue
+        variable:
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, ']') | length(@)
+      - name: exprLeftCurlyBracesValue
+        variable:
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, '{') | length(@)
+      - name: exprRightCurlyBracesValue
+        variable:
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, '}') | length(@)
+      - name: exprLeftParenthesisValue
+        variable:
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, '(') | length(@)
+      - name: exprRightParenthesisValue
+        variable:
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, ')') | length(@)
+      - name: exprDoubleQuotesValue
+        variable:
+          jmesPath: request.object.spec.groups[].rules[].expr | to_string(@) | split(@, '\"') | length(@) | subtract(@, `1`) | modulo(@, `2`)
+      validate:
+        message: "Group {{request.object.spec.groups[].name}} with alert {{request.object.spec.groups[].rules[].alert}} has a wrong expr - unnecessary symbols"
+        deny:
+          conditions:
+            any:
+              - key: '{{exprLeftSquareBracketValue}}'
+                operator: NotEquals
+                value: '{{exprRightSquareBracketValue}}'
+              - key: '{{exprLeftCurlyBracesValue}}'
+                operator: NotEquals
+                value: '{{exprRightCurlyBracesValue}}'
+              - key: '{{exprLeftParenthesisValue}}'
+                operator: NotEquals
+                value: '{{exprRightParenthesisValue}}'
+              - key: '{{exprDoubleQuotesValue}}'
+                operator: NotEquals
+                value: "0"

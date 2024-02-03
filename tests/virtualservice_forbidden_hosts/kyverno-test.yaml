@@ -1,0 +1,22 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: istio-deny-vs-hosts-test
+policies:
+  - ../../policies/03-forbiddenhosts-to-all-namespaces.yaml
+resources:
+  - manifests/vs-with-denied-host.yaml
+  - manifests/vs-with-allowed-host.yaml
+results:
+  - policy: istio-deny-vs-hosts
+    rule: deny-forbidden-hosts-in-vs
+    resources:
+      - check-kyverno/vs-with-denied-host
+    kind: VirtualService
+    result: fail
+  - policy: istio-deny-vs-hosts
+    rule: deny-forbidden-hosts-in-vs
+    resources:
+      - check-kyverno/vs-with-allowed-host
+    kind: VirtualService
+    result: pass

@@ -1,0 +1,128 @@
+---
+# Source: kyverno/templates/02-disallow-latest-images.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+spec:
+  background: false
+  validationFailureAction: Enforce
+  rules:
+  - name: validate-container-image-tags
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    exclude:
+      resources:
+        # Exclude namespaces which defined in the values defined under '.excludeNamespaces'
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt
+    validate:
+      message: "`containers` tag `latest` is not allowed."
+      foreach:
+      - list: "request.object.spec.containers[]"
+        deny:
+          conditions:
+            all:
+            - key: "{{ regex_match('.*:latest$', '{{element.image}}') }}"
+              operator: Equals
+              value: true
+  - name: validate-initcontainer-image-tags
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    exclude:
+      resources:
+        # Exclude namespaces which defined in the values defined under '.excludeNamespaces'
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt
+    validate:
+      message: "`initContainers` tag `latest` is not allowed."
+      foreach:
+      - list: "request.object.spec.initContainers[]"
+        deny:
+          conditions:
+            all:
+            - key: "{{ regex_match('.*:latest$', '{{element.image}}') }}"
+              operator: Equals
+              value: true

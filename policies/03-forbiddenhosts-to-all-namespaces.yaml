@@ -1,0 +1,80 @@
+---
+# Source: kyverno/templates/03-forbiddenhosts-to-all-namespaces.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: istio-deny-vs-hosts
+spec:
+  background: false
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: deny-forbidden-hosts-in-vs
+    match:
+      resources:
+        kinds:
+        - networking.istio.io/v1beta1/VirtualService
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    exclude:
+      resources:
+        # Exclude namespaces which defined in the values defined under '.excludeNamespaces'
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt
+    validate:
+      message: "Your VirtualService {{request.object.metadata.name}} contains a reserved denied host. Remove it from VirtualService config or contact DevOps."
+      # The purpose of this ClusterPolicy rule to block any VirtualService object if it uses any of domains defined under variable `.istioDeniedHosts`
+      foreach:
+      - list: "request.object.spec.hosts[]"
+        deny:
+          conditions:
+            any:
+            - key: "{{element}}"
+              message: Denied host "{{element}}"
+              operator: In
+              value:
+              - "beta.opso.org"
+              - "beta.opso.net"
+              - "beta.opso.lan"
+              - "dev.beta.opso.net"
+              - "dev.beta.opso.org"
+              - "prime.opso.net"
+              - "prime.opso.org"
+              - "prime.opso.io"

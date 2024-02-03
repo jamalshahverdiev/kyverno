@@ -1,0 +1,63 @@
+---
+# Source: kyverno/templates/09-service-name-validation.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-service-name-prefix
+spec:
+  validationFailureAction: Audit
+  background: false
+  rules:
+  - name: check-service-name-prefix
+    match:
+      resources:
+        kinds:
+          - Service
+    exclude:
+      resources:
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt
+    validate:
+      message: "The service name must start with one of the following prefixes: grpc, http, http2, https, mongo, mysql, redis, tcp, tls, udp."
+      foreach:
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            all:
+              - key: "{{regex_match('^grpc|http|http2|https|mongo|mysql|redis|tcp|tls|udp(-.+)?$', '{{element.name}}')}}"
+                operator: Equals
+                value: false

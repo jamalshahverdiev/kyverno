@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: valid-pod-internal-images
+  namespace: check-kyverno
+spec:
+  containers:
+  - name: my-container
+    image: "029204637751.dkr.ecr.eu-central-1.amazonaws.com/internal-image:latest"
+  initContainers:
+  - name: init-container
+    image: "934587711440.dkr.ecr.us-west-2.amazonaws.com/init-image:latest"

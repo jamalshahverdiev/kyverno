@@ -1,0 +1,23 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: restrict-loadbalancer-service-test
+policies:
+  - ../../policies/05-disallow-svc-loadbalancer.yaml
+variables: variables.yaml
+resources:
+  - manifests/service-with-loadbalancer.yaml
+  - manifests/service-without-loadbalancer.yaml
+results:
+  - policy: restrict-loadbalancer-service
+    rule: validate-loadbalancer
+    resources:
+      - check-kyverno/service-with-loadbalancer
+    kind: Service
+    result: fail
+  - policy: restrict-loadbalancer-service
+    rule: validate-loadbalancer
+    resources:
+      - check-kyverno/service-without-loadbalancer
+    kind: Service
+    result: pass

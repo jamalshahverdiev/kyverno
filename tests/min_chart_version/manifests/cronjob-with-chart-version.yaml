@@ -1,0 +1,20 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cronjob-with-chart-version
+  namespace: check-kyverno
+  annotations:
+    chart: mychart-3.0.21
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: job-container
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo "Hello from the CronJob"

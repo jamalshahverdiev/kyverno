@@ -1,0 +1,66 @@
+---
+# Source: kyverno/templates/01-disallow-hostipc.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-hostipc-sharing
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: validate-hostipc
+    match:
+      any:
+      - resources:
+          kinds:
+            - Pod
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    exclude:
+      resources:
+        # Exclude namespaces which defined in the values defined under '.excludeNamespaces' 
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt  
+    validate:
+      # The purpose of this ClusterPolicy rule to block key `hostIPC` under spec field for any Pod  
+      message: "Use of hostIPC is not allowed"
+      pattern:
+        spec:
+          =(hostIPC): "false"

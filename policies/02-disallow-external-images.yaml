@@ -1,0 +1,67 @@
+---
+# Source: kyverno/templates/02-disallow-external-images.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-external-images
+spec:
+  background: false
+  validationFailureAction: Audit
+  rules:
+  - name: validate-container-image-repositories
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    validate:
+      message: "Images only from Internal Docker Registry are allowed. InvalidImage={{ innerContext }}"
+      foreach:
+      - list: "request.object.spec.containers[]"
+        context:
+        - name: innerContext
+          variable:
+            value:
+              image: "{{ element.image }}"
+
+        deny:
+          conditions:
+            all:
+            - key: "{{ element.image }}"
+              operator: NotEquals
+              value: ""
+            - key: "{{ regex_match('^(029204637751|934587711440|602401143452)\\.dkr\\.ecr\\.(eu-central-1|us-west-2)\\.amazonaws\\.com\\/.*', '{{element.image}}') }}"
+              operator: Equals
+              value: false
+  - name: validate-initcontainer-image-repositories
+    match:
+      resources:
+        kinds:
+        - Pod
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    validate:
+      message: "Images only from Internal Docker Registry are allowed. InvalidImage={{ innerContext }}"
+      foreach:
+      - list: "request.object.spec.initContainers[]"
+        context:
+        - name: innerContext
+          variable:
+            value:
+              image: "{{ element.image }}"
+        deny:
+          conditions:
+            all:
+            - key: "{{ element.image }}"
+              operator: NotEquals
+              value: ""
+            - key: "{{ regex_match('^(029204637751|934587711440|602401143452)\\.dkr\\.ecr\\.(eu-central-1|us-west-2)\\.amazonaws\\.com\\/.*', '{{element.image}}') }}"
+              operator: Equals
+              value: false

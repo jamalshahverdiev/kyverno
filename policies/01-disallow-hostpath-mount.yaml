@@ -1,0 +1,75 @@
+---
+# Source: kyverno/templates/01-disallow-hostpath-mount.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-host-path
+  annotations:
+    policies.kyverno.io/title: Disallow hostPath
+    policies.kyverno.io/category: Pod Security Standards (Baseline)
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod,Volume
+    kyverno.io/kyverno-version: 1.11.1
+    kyverno.io/kubernetes-version: "1.22-1.26"
+    policies.kyverno.io/description: >-
+      HostPath volumes let Pods use host directories and volumes in containers.
+      Using host resources can be used to access shared data or escalate privileges
+      and should not be allowed. This policy ensures no hostPath volumes are in use.      
+spec:
+  admission: true
+  background: false
+  mutateExistingOnPolicyUpdate: false
+  validationFailureAction: Enforce
+  rules:
+    - name: host-path
+      exclude:
+        resources:
+          # Exclude namespaces which defined in the values defined under '.excludeNamespaces' 
+          namespaces:
+          - argocd-system
+          - cert-manager
+          - elastic-system
+          - events-exporter
+          - external-dns
+          - gatekeeper-system
+          - gitlab-runner
+          - istio-*
+          - jaeger-prod
+          - kafka-system
+          - keda
+          - kube-*
+          - kubecost
+          - kubecost-mgmt
+          - kyverno
+          - kubecost
+          - kubecost-*
+          - logging
+          - monitoring-prod
+          - oauth2-proxy-system
+          - path-router-operator-system
+          - recut
+          - elastic-dev
+          - vault-system
+          - velero-prod
+          - k8ssandra-operator
+          - temporal-operator
+          - cloud-temporal-*
+          - cassandra
+          - cassandra-tls
+          - temporal
+          - data-kafka-*
+          - shared-kafka-*
+          - trivy-system-*
+          - sentry-mgmt  
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      validate:
+        message: >-
+          HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset.          
+        pattern:
+          spec:
+            =(volumes):
+              - X(hostPath): "null"

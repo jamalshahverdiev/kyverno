@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-with-chart-version
+  namespace: check-kyverno
+  annotations:
+    chart: mychart-3.0.21
+spec:
+  template:
+    spec:
+      containers:
+      - name: job-container
+        image: busybox
+        command: ["echo", "Hello from the Job"]

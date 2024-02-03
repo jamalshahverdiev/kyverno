@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: virtualservice-with-chart-version
+  namespace: check-kyverno
+  annotations:
+    chart: mychart-3.0.21
+spec:
+  hosts:
+    - example.com
+  http:
+    - route:
+        - destination:
+            host: service1

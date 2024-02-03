@@ -1,0 +1,11 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: prometheusrule-with-incorrect-expr-parenthesis
+  namespace: check-kyverno
+spec:
+  groups:
+  - name: group1
+    rules:
+    - alert: Alert1
+      expr: 'sum(metric_name) by (label1, label2}'

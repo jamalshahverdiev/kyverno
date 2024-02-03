@@ -1,0 +1,28 @@
+stages:
+  - kyverno-test
+
+kyverno-test:
+  tags:
+    - build
+  stage: kyverno-test
+  image: docker.registry.domain.com/devops/ci-tools:v0.1.10 
+  before_script: 
+    - >
+      echo "Running Kyverno tests for changed directories...";
+      cd helm/kyverno && helm dependency update > /dev/null;  
+      helm template . -f values.yaml -f ../../inventory/dt-dev-euc1/kyverno.yaml --set clusterPolicyValues.privDnsEligCreateProd.enabled=true --set clusterPolicyValues.privDnsEligUpdateProd.enabled=true --output-dir ./kyverno > /dev/null;
+      ln -s kyverno/kyverno/templates policies;
+  script:
+    - |
+      for test in tests/*; do
+        testname=$(basename "$test" .yaml)
+        start_time=$(date +%s)
+        printf "\e[0Ksection_start:$start_time:${testname}_test[collapsed=true]\r\e[0KKyverno CLI test for \e[32m\e[1m${test#tests/}\e[0m\n"
+        kyverno test "$test"
+        end_time=$(date +%s)
+        printf "section_end:$end_time:${testname}_test\r\e[0K"
+      done
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - helm/kyverno/**/*

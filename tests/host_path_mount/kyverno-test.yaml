@@ -1,0 +1,36 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: service-name-prefix-test
+policies:
+  - ../../policies/01-disallow-hostpath-mount.yaml
+resources:
+  - manifests/daemonset.yaml   
+  - manifests/deployment.yaml   
+  - manifests/statefulset.yaml   
+  - manifests/pod.yaml   
+results:
+  - policy: disallow-host-path
+    rule: host-path
+    resources:
+      - check-kyverno/test-pod
+    kind: Pod
+    result: pass  
+  - policy: disallow-host-path
+    rule: host-path
+    resources:
+      - check-kyverno/test-deployment
+    kind: Deployment
+    result: pass  
+  - policy: disallow-host-path
+    rule: host-path
+    resources:
+      - check-kyverno/test-daemonset
+    kind: DaemonSet
+    result: pass  
+  - policy: disallow-host-path
+    rule: host-path
+    resources:
+      - check-kyverno/test-statefulset
+    kind: StatefulSet
+    result: pass  

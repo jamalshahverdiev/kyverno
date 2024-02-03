@@ -1,0 +1,27 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+globalValues:
+  request.operation: UPDATE
+policies:
+  - name: limit-replicas
+    resources:
+      - name: deployment-with-annotation
+        values:
+          namespaceMaxReplicas: 2
+      - name: deployment-no-annotation
+        values:
+          namespaceMaxReplicas: 2
+      - name: statefulset-with-annotation
+        values:
+          namespaceMaxReplicas: 2
+      - name: statefulset-no-annotation
+        values:
+          namespaceMaxReplicas: 2
+      - name: hpa-with-annotation
+        values:
+          namespaceMaxReplicas: 2
+      - name: hpa-no-annotation
+        values:
+          namespaceMaxReplicas: 2

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-with-chart-version
+  namespace: check-kyverno
+  annotations:
+    chart: mychart-3.0.21
+data:
+  config: "version: 3.0.19"

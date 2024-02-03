@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: vs-update-with-disallowed-gateway
+  namespace: wannot
+spec:
+  gateways:
+  - istio-system/istio-ingressgateway-public
+  hosts:
+  - blocked-host-1
+  - allowed-host-2
+  http:
+  - route:
+    - destination:
+        host: invalid-service

@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: vs-with-denied-host
+  namespace: check-kyverno
+spec:
+  hosts:
+  - beta.opso.lan
+  http:
+  - route:
+    - destination:
+        host: valid-service

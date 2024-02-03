@@ -1,0 +1,17 @@
+---
+# Source: kyverno/templates/00-kyverno-access-3.1.1.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:background-controller:extended
+  labels:
+    app.kubernetes.io/component: background-controller
+    app.kubernetes.io/instance: kyverno
+    app.kubernetes.io/part-of: kyverno
+rules:
+- apiGroups: ["apps"]
+  resources: ["daemonsets", "replicasets", "deployments", "statefulsets"]
+  verbs: ["get", "list", "watch", "update", "patch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["delete"]

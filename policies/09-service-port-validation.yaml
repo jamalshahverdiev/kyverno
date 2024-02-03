@@ -1,0 +1,253 @@
+---
+# Source: kyverno/templates/09-service-port-validation.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: validate-service-ports
+spec:
+  background: false
+  validationFailureAction: Audit
+  rules:
+  - name: check-service-ports-protocols
+    match:
+      resources:
+        kinds:
+        - Service
+    exclude:
+      resources:
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt
+    preconditions:
+      # This is required to not work on 'DELETE' event
+      all:
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    validate:
+      # The purpose of this clusterpolicy rule to validate services with regex pattern match and check port range maps which is defined in our standarts.
+      message: "The service name must start with standard and the port number should be between range of this standard. https://opso.lan"
+      foreach:
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13049
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13000
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^grpc(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+              - key: "{{ regex_match('^grpc-web(-.+)?$', '{{element.name}}' ) }}"
+                operator: NotEquals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13099
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13050
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^grpc-web(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13149
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13100
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^http(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13199
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13150
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^http2(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13249
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13200
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^https(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13299
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13250
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^mongo(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13349
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13300
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^mysql(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13399
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13350
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^redis(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13449
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13400
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^tcp(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13499
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13450
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^tls(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true
+      - list: "request.object.spec.ports[]"
+        deny:
+          conditions:
+            # Check the port range for the service which must be metween '.minPort' and '.maxPort'
+            # for each service by '.name'
+            any:
+              - key: "{{ element.port }}"
+                operator: GreaterThan
+                value: 13549
+              - key: "{{ element.port }}"
+                operator: LessThan
+                value: 13500
+            all:
+            # Check the service name matches by regex pattern defined for each of them
+              - key: "{{ regex_match('^udp(-.+)?$', '{{element.name}}' ) }}"
+                operator: Equals
+                value: true

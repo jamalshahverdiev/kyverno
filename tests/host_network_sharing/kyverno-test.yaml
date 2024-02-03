@@ -1,0 +1,22 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-hostnetwork-test
+policies:
+  - ../../policies/01-disallow-hostnetwork.yaml
+resources:
+  - manifests/valid-pod.yaml
+  - manifests/invalid-pod.yaml
+results:
+  - policy: disallow-hostnetwork-sharing
+    rule: validate-hostnetwork
+    resources:
+      - check-kyverno/valid-pod
+    kind: Pod
+    result: pass
+  - policy: disallow-hostnetwork-sharing
+    rule: validate-hostnetwork
+    resources:
+      - check-kyverno/invalid-pod
+    kind: Pod
+    result: fail

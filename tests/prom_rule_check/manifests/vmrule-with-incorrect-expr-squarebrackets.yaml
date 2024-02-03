@@ -1,0 +1,38 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: vmrule-with-incorrect-expr-squarebrackets
+  namespace: check-kyverno
+spec:
+  groups:
+  - name: user-service-manager
+    rules:
+    - alert: HighErrorRate-user-service-manager-dev.
+      expr: |
+        sum(
+          increase(
+            logback_events_total{
+              app="user-service-manager",
+              kubernetes_namespace="user-service-manager-dev",
+              level="error"
+            }[10m]]
+          )
+        )
+        /
+        sum(
+          increase(
+            logback_events_total{
+              app="user-service-manager",
+              kubernetes_namespace="user-service-manager-dev",
+              level!="error"
+            }[10m]
+          )
+        )
+        > 0.025
+      for: 5m
+      labels:
+        alert_team: platform
+        alerts_channel: platform-alerting-dev
+        service: user-service-manager
+        severity: warning
+        team: platform

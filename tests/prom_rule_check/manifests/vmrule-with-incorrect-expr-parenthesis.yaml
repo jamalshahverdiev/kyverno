@@ -1,0 +1,11 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: vmrule-with-incorrect-expr-parenthesis
+  namespace: check-kyverno
+spec:
+  groups:
+  - name: group1
+    rules:
+    - alert: Alert1
+      expr: 'sum(metric_name) by (label1, label2}'

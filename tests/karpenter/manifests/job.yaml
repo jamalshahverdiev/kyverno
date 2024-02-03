@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sample-job
+  namespace: check-kyverno
+spec:
+  template:
+    metadata:
+      annotations:
+        karpenter.sh/do-not-evict: "true"
+    spec:
+      containers:
+      - name: hello
+        image: busybox
+        command: ['sh', '-c', 'echo "Hello, Kubernetes!" && sleep 3600']
+      restartPolicy: OnFailure

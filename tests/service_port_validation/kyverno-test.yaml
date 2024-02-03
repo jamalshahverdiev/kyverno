@@ -1,0 +1,17 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: service-port-validation-test
+policies:
+  - ../../policies/09-service-port-validation.yaml
+resources:
+  - manifests/service-allinone.yaml
+results:
+  - policy: validate-service-ports
+    rule: check-service-ports-protocols
+    resources:
+      - check-kyverno/allinone
+    kind: Service
+    result: pass 
+
+     

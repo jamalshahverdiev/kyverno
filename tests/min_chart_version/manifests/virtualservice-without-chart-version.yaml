@@ -1,0 +1,13 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: virtualservice-without-chart-version
+  namespace: check-kyverno
+spec:
+  hosts:
+    - example.com
+  http:
+    - route:
+        - destination:
+            host: service1

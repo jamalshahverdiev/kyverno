@@ -1,0 +1,30 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: validate-private-dns-eligible-create-prod-test
+policies:
+  - ../../policies/02-k8s-private-dns-eligible-create-prod.yaml
+variables: variables.yaml
+resources:
+  - manifests/vs-with-allowed-gateway-and-annotation.yaml
+  - manifests/vs-with-allowed-gateway-and-no-annotation.yaml
+  - manifests/vs-with-disallowed-gateway.yaml
+results:
+  - policy: validate-private-dns-eligible-create-prod
+    rule: check-vs-private-dns-eligible
+    resources:
+      - wannot/vs-with-allowed-gateway-and-annotation
+    kind: VirtualService
+    result: pass
+  - policy: validate-private-dns-eligible-create-prod
+    rule: check-vs-private-dns-eligible
+    resources:
+      - wannot/vs-with-allowed-gateway-and-no-annotation
+    kind: VirtualService
+    result: fail
+  - policy: validate-private-dns-eligible-create-prod
+    rule: check-vs-private-dns-eligible
+    resources:
+      - wannot/vs-with-disallowed-gateway
+    kind: VirtualService
+    result: skip

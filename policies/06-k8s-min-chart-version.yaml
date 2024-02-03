@@ -1,0 +1,82 @@
+---
+# Source: kyverno/templates/06-k8s-min-chart-version.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: min-chart-version
+spec:
+  validationFailureAction: Audit
+  background: false
+  rules:
+    - name: check-chart-version-rule
+      match:
+        resources:
+          kinds:
+            - Deployment
+            - StatefulSet
+            - VirtualService
+            - CronJob
+            - Job
+            - AuthorizationPolicy
+            - ConfigMap
+      preconditions:
+        all:
+        - key: "{{ request.operation }}"
+          operator: NotEquals
+          value: DELETE
+        - key: "{{ chartVersion }}"
+          operator: NotEquals
+          value: "_"
+
+      exclude:
+        resources:
+          # Exclude namespaces which defined in the values defined under '.excludeNamespaces'
+          namespaces:
+          - argocd-system
+          - cert-manager
+          - elastic-system
+          - events-exporter
+          - external-dns
+          - gatekeeper-system
+          - gitlab-runner
+          - istio-*
+          - jaeger-prod
+          - kafka-system
+          - keda
+          - kube-*
+          - kubecost
+          - kubecost-mgmt
+          - kyverno
+          - kubecost
+          - kubecost-*
+          - logging
+          - monitoring-prod
+          - oauth2-proxy-system
+          - path-router-operator-system
+          - recut
+          - elastic-dev
+          - vault-system
+          - velero-prod
+          - k8ssandra-operator
+          - temporal-operator
+          - cloud-temporal-*
+          - cassandra
+          - cassandra-tls
+          - temporal
+          - data-kafka-*
+          - shared-kafka-*
+          - trivy-system-*
+          - sentry-mgmt
+
+      context:
+        - name: chartVersion
+          variable:
+            jmesPath: "request.object.metadata.annotations.chart || '_' | split(@, '-') | [-1]"
+      validate:
+        message: "Chart version should not be less than 3.0.20. Current is {{chartVersion}}"
+        deny:
+          conditions:
+            any:
+              - key: "{{ semver_compare('{{chartVersion}}','<3.0.20') }}"
+                value: true
+                operator: "Equals"

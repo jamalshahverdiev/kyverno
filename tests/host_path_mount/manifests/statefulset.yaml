@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: test-statefulset
+  namespace: check-kyverno
+spec:
+  serviceName: "test-statefulset"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test-statefulset
+  template:
+    metadata:
+      labels:
+        app: test-statefulset
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+      # volumes:
+      #   - name: test-volume
+      #     hostPath:
+      #       path: /data
+      #       type: Directory

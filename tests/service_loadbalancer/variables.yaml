@@ -1,0 +1,13 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+policies:
+  - name: restrict-loadbalancer-service
+    resources:
+      - name: service-with-loadbalancer
+        values:
+          allowedServiceType: "!LoadBalancer"
+      - name: service-without-loadbalancer
+        values:
+          allowedServiceType: "!LoadBalancer"

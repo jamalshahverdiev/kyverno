@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: invalid-pod-latest-tag
+  namespace: check-kyverno
+spec:
+  containers:
+  - name: my-container
+    image: "external-registry.com/my-image:latest"
+  initContainers:
+  - name: init-container
+    image: "internal-registry.com/init-image:latest"

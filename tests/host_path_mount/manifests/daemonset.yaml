@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: test-daemonset
+  namespace: check-kyverno
+spec:
+  selector:
+    matchLabels:
+      name: test-daemonset
+  template:
+    metadata:
+      labels:
+        name: test-daemonset
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+      # volumes:
+      #   - name: test-volume
+      #     hostPath:
+      #       path: /data
+      #       type: Directory

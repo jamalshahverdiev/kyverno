@@ -1,0 +1,18 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Value
+metadata:
+  name: values
+globalValues:
+  request.operation: UPDATE
+policies:
+  - name: validate-private-dns-eligible-update-prod
+    resources:
+      - name: vs-update-with-allowed-gateway-and-annotation
+        values:
+          allowedPrivateHosts: permit.com, allowed.com
+      - name: vs-update-with-allowed-gateway-and-no-annotation
+        values:
+          allowedPrivateHosts: salam.com, domain.com
+      - name: vs-update-with-disallowed-gateway
+        values:
+          allowedPrivateHosts: hay.com, vay.com

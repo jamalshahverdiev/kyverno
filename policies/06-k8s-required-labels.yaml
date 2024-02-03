@@ -1,0 +1,71 @@
+---
+# Source: kyverno/templates/06-k8s-required-labels.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: required-labels
+spec:
+  background: false
+  validationFailureAction: Enforce
+  rules:
+  - name: check-required-labels
+    match:
+      resources:
+        kinds:
+        - apps/v1/Deployment
+        - apps/v1/StatefulSet
+        - apps/v1/DaemonSet
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    exclude:
+      resources:
+        # Exclude namespaces which defined in the values defined under '.excludeNamespaces'
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt
+    validate:
+      message: "The label `team` is required."
+      # The purpose of this ClusterPolicy rule to block any resources like as 'Deployment', 'StatefulSet' and 'DaemonSet' to block
+      # in case of under 'spec.template.metadata.labels' will not be present 'team' key with some value
+      pattern:
+        spec:
+          template:
+            metadata:
+              labels:
+                team: "?*"

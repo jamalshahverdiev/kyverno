@@ -1,0 +1,34 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: disallow-latest-images-test
+policies:
+  - ../../policies/02-disallow-latest-images.yaml
+resources:
+  - manifests/valid-pod-non-latest-tag.yaml
+  - manifests/invalid-pod-latest-tag.yaml
+results:
+  - policy: disallow-latest-tag
+    rule: validate-container-image-tags
+    resources:
+      - check-kyverno/valid-pod-non-latest-tag
+    kind: Pod
+    result: fail
+  - policy: disallow-latest-tag
+    rule: validate-initcontainer-image-tags
+    resources:
+      - check-kyverno/valid-pod-non-latest-tag
+    kind: Pod
+    result: pass
+  - policy: disallow-latest-tag
+    rule: validate-container-image-tags
+    resources:
+      - check-kyverno/invalid-pod-latest-tag
+    kind: Pod
+    result: fail
+  - policy: disallow-latest-tag
+    rule: validate-initcontainer-image-tags
+    resources:
+      - check-kyverno/invalid-pod-latest-tag
+    kind: Pod
+    result: fail

@@ -1,0 +1,64 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: prom-rule-check-test
+policies:
+  - ../../policies/07-prom-rule-check.yaml
+resources:
+  - manifests/vmrule-with-incorrect-expr-curlybraces.yaml
+  - manifests/vmrule-with-incorrect-expr-parenthesis.yaml
+  - manifests/vmrule-with-incorrect-expr-doublequotes.yaml
+  - manifests/vmrule-with-incorrect-expr-squarebrackets.yaml
+  - manifests/prometheusrule-with-incorrect-expr-parenthesis.yaml
+  - manifests/prometheusrule-with-incorrect-expr-curlybraces.yaml
+  - manifests/prometheusrule-with-incorrect-expr-doublequotes.yaml
+  - manifests/prometheusrule-with-incorrect-expr-squarebrackets.yaml
+results:
+  - policy: prom-rule-check
+    rule: check-unnecessary-symbols
+    resources:
+      - check-kyverno/vmrule-with-incorrect-expr-parenthesis
+    kind: VMRule
+    result: fail
+  - policy: prom-rule-check
+    rule: check-unnecessary-symbols
+    resources:
+      - check-kyverno/vmrule-with-incorrect-expr-curlybraces
+    kind: VMRule
+    result: fail
+  - policy: prom-rule-check
+    rule: check-unnecessary-symbols
+    resources:
+      - check-kyverno/vmrule-with-incorrect-expr-doublequotes
+    kind: VMRule
+    result: fail
+  - policy: prom-rule-check
+    rule: check-unnecessary-symbols
+    resources:
+      - check-kyverno/vmrule-with-incorrect-expr-squarebrackets
+    kind: VMRule
+    result: fail
+  - policy: prom-rule-check
+    rule: check-unnecessary-symbols
+    resources:
+      - check-kyverno/prometheusrule-with-incorrect-expr-parenthesis
+    kind: PrometheusRule
+    result: fail
+  - policy: prom-rule-check
+    rule: check-unnecessary-symbols
+    resources:
+      - check-kyverno/prometheusrule-with-incorrect-expr-curlybraces
+    kind: PrometheusRule
+    result: fail
+  - policy: prom-rule-check
+    rule: check-unnecessary-symbols
+    resources:
+      - check-kyverno/prometheusrule-with-incorrect-expr-doublequotes
+    kind: PrometheusRule
+    result: fail
+  - policy: prom-rule-check
+    rule: check-unnecessary-symbols
+    resources:
+      - check-kyverno/prometheusrule-with-incorrect-expr-squarebrackets
+    kind: PrometheusRule
+    result: fail

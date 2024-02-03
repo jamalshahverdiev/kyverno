@@ -1,0 +1,107 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: min-chart-version-test
+policies:
+  - ../../policies/06-k8s-min-chart-version.yaml
+variables: variables.yaml
+resources:
+  - manifests/deployment-with-chart-version.yaml
+  - manifests/deployment-without-chart-version.yaml
+  - manifests/statefulset-with-chart-version.yaml
+  - manifests/statefulset-without-chart-version.yaml
+  - manifests/virtualservice-with-chart-version.yaml
+  - manifests/virtualservice-without-chart-version.yaml
+  - manifests/cronjob-with-chart-version.yaml
+  - manifests/cronjob-without-chart-version.yaml
+  - manifests/job-with-chart-version.yaml
+  - manifests/job-without-chart-version.yaml
+  - manifests/authorizationpolicy-with-chart-version.yaml
+  - manifests/authorizationpolicy-without-chart-version.yaml
+  - manifests/configmap-with-chart-version.yaml
+  - manifests/configmap-without-chart-version.yaml
+results:
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/deployment-with-chart-version
+    kind: Deployment
+    result: pass
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/deployment-without-chart-version
+    kind: Deployment
+    result: fail
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/statefulset-with-chart-version
+    kind: StatefulSet
+    result: pass
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/statefulset-without-chart-version
+    kind: StatefulSet
+    result: fail
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/virtualservice-with-chart-version
+    kind: VirtualService
+    result: pass
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/virtualservice-without-chart-version
+    kind: VirtualService
+    result: fail
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/cronjob-with-chart-version
+    kind: CronJob
+    result: pass
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/cronjob-without-chart-version
+    kind: CronJob
+    result: fail
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/job-with-chart-version
+    kind: Job
+    result: pass
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/job-without-chart-version
+    kind: Job
+    result: fail
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/authorizationpolicy-with-chart-version
+    kind: AuthorizationPolicy
+    result: pass
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/authorizationpolicy-without-chart-version
+    kind: AuthorizationPolicy
+    result: fail
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/configmap-with-chart-version
+    kind: ConfigMap
+    result: pass
+  - policy: min-chart-version
+    rule: check-chart-version-rule
+    resources:
+      - check-kyverno/configmap-without-chart-version
+    kind: ConfigMap
+    result: fail

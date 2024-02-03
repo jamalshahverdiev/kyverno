@@ -1,0 +1,76 @@
+---
+# Source: kyverno/templates/05-disallow-svc-nodeport.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-nodeport-service
+  annotations:
+    policies.kyverno.io/title: Disallow NodePort
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Service
+    policies.kyverno.io/description: >-
+      A Kubernetes Service of type NodePort uses a host port to receive traffic from
+      any source. A NetworkPolicy cannot be used to control traffic to host ports.
+      Although NodePort Services can be useful, their use must be limited to Services
+      with additional upstream security checks. This policy validates that any new Services
+      do not use the `NodePort` type.
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: validate-nodeport
+    match:
+      any:
+      - resources:
+          kinds:
+          - Service
+    preconditions:
+      any:
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    exclude:
+      resources:
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt
+    validate:
+      message: "Services of type {{ request.object.spec.type }} are not allowed"
+      pattern:
+        spec:
+          =(type): "!NodePort"

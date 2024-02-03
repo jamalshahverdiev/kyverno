@@ -1,0 +1,19 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: authorizationpolicy-with-chart-version
+  namespace: check-kyverno
+  annotations:
+    chart: mychart-3.0.21
+spec:
+  selector:
+    matchLabels:
+      app: service1
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        notNamespaces: ["bookinfo"]
+    when:
+    - key: request.headers[authority]
+      values: ["service1.default.svc.cluster.local"]

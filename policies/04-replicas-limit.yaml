@@ -1,0 +1,150 @@
+---
+# Source: kyverno/templates/04-replicas-limit.yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: limit-replicas
+spec:
+  background: false
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: check-replica-limit-deployment-daemonset
+    match:
+      any:
+        - resources:
+            kinds:
+            - apps/v1/Deployment
+            - apps/v1/StatefulSet
+    exclude:
+      resources:
+        # Exclude namespaces which defined in the values defined under '.excludeNamespaces'
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt
+    # The purpose of this ClusterPolicy to block and kinds as 'Deployment' and 'StatefulSet' if they replica count will be more
+    # in case if their namespaces have specific annotation with value to define replica count. If annotation under namespace (Deployment or Statefulset namespace)
+    # will not be present then default value will be 2. But rule will be matched to the namespaces which finishes with '-dev' and '-stable'
+    context:
+    - name: namespaceMaxReplicas
+      apiCall:
+        urlPath: "/api/v1/namespaces/{{request.namespace}}"
+        method: GET
+        jmesPath: "metadata.annotations.\"opso.lan/max-replicas\" || '2'"
+    preconditions:
+      all:
+      - key: "{{ regex_match('.*-(dev|stable)$', '{{request.namespace}}') }}"
+        operator: Equals
+        value: true
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    validate:
+      message: "The number of replicas exceeds the limit defined in the namespace annotation or maximal value 2."
+      deny:
+        conditions:
+          - key: "{{request.object.spec.replicas}}"
+            operator: GreaterThan
+            value: "{{ namespaceMaxReplicas }}"
+  - name: check-replica-limit-hpa
+    match:
+      any:
+        - resources:
+            kinds:
+            - autoscaling/v2/HorizontalPodAutoscaler
+    exclude:
+      resources:
+        # Exclude namespaces which defined in the values defined under '.excludeNamespaces'
+        namespaces:
+        - argocd-system
+        - cert-manager
+        - elastic-system
+        - events-exporter
+        - external-dns
+        - gatekeeper-system
+        - gitlab-runner
+        - istio-*
+        - jaeger-prod
+        - kafka-system
+        - keda
+        - kube-*
+        - kubecost
+        - kubecost-mgmt
+        - kyverno
+        - kubecost
+        - kubecost-*
+        - logging
+        - monitoring-prod
+        - oauth2-proxy-system
+        - path-router-operator-system
+        - recut
+        - elastic-dev
+        - vault-system
+        - velero-prod
+        - k8ssandra-operator
+        - temporal-operator
+        - cloud-temporal-*
+        - cassandra
+        - cassandra-tls
+        - temporal
+        - data-kafka-*
+        - shared-kafka-*
+        - trivy-system-*
+        - sentry-mgmt
+    # The purpose of this ClusterPolicy to block and kinds as 'HorizontalPodAutoscaler' if maxreplicas count will be more
+    # in case if their namespace have specific annotation with value to define max replica count. If annotation under namespace (HorizontalPodAutoscaler namespace)
+    # will not be present then default value will be 2. But rule will be matched to the namespaces which finishes with '-dev' and '-stable'
+    context:
+    - name: namespaceMaxReplicas
+      apiCall:
+        urlPath: "/api/v1/namespaces/{{request.namespace}}"
+        method: GET
+        jmesPath: "metadata.annotations.\"opso.lan/max-replicas\" || '2'"
+    preconditions:
+      all:
+      - key: "{{ regex_match('.*-(dev|stable)$', '{{request.namespace}}') }}"
+        operator: Equals
+        value: true
+      - key: "{{ request.operation }}"
+        operator: NotEquals
+        value: DELETE
+    validate:
+      message: "The number of replicas exceeds the limit defined in the namespace annotation or maximal value 2."
+      deny:
+        conditions:
+          - key: "{{request.object.spec.maxReplicas}}"
+            operator: GreaterThan
+            value: "{{ namespaceMaxReplicas }}"

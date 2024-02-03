@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: prometheusrule-with-incorrect-expr-squarebrackets
+  namespace: check-kyverno
+  labels:
+    prometheus: main
+spec:
+  groups:
+    - name: example
+      rules:
+        - alert: HighRequestLatency
+          expr: sum(rate(http_request_duration_seconds_count[[5m])) by (job) > 100
+          for: 10m
+          labels:
+            severity: page
+          annotations:
+            summary: High request latency

@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: vs-public-dns-eligible
+  namespace: wannot
+spec:
+  gateways:
+  - istio-system/istio-ingressgateway-public
+  hosts:
+  - allowed.com
+  http:
+  - route:
+    - destination:
+        host: valid-service

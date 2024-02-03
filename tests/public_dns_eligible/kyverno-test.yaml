@@ -1,0 +1,32 @@
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: validate-public-dns-eligible-test
+policies:
+  - ../../policies/02-k8s-public-dns-eligible.yaml
+variables: variables.yaml
+resources:
+  - manifests/vs-public-dns-eligible.yaml
+  - manifests/vs-non-public-dns-eligible.yaml
+  - manifests/vs-public-dns-non-eligible.yaml
+results:
+  - policy: validate-public-dns-eligible
+    rule: check-vs-publicdns-eligible
+    resources:
+      - wannot/vs-public-dns-eligible
+    kind: VirtualService
+    result: pass
+
+  - policy: validate-public-dns-eligible
+    rule: check-vs-publicdns-eligible
+    resources:
+      - wannot/vs-public-dns-non-eligible
+    kind: VirtualService
+    result: fail
+
+  - policy: validate-public-dns-eligible
+    rule: check-vs-publicdns-eligible
+    resources:
+      - wannot/vs-non-public-dns-eligible
+    kind: VirtualService
+    result: skip
