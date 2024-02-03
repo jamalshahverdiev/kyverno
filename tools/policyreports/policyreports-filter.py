@@ -15,8 +15,6 @@ def get_audit_cluster_policies():
     
     return audit_policies
 
-# cmd = get_audit_cluster_policies()
-# print(cmd)
 def get_rules_from_policy(policy_name):
     config.load_kube_config()
     v1 = client.CustomObjectsApi()
@@ -52,7 +50,7 @@ def filter_policy_reports(reports, policy_name, rule_name):
             modified_report = report.copy()
             modified_report['results'] = filtered_results
             modified_report['summary']['fail'] = len(filtered_results)
-            modified_report['summary']['pass'] = 0  # Assuming only 'fail' results are of interest
+            modified_report['summary']['pass'] = 0  
             filtered_reports.append(modified_report)
     return filtered_reports
 
