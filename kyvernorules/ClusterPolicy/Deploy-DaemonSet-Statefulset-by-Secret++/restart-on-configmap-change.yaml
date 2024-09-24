@@ -1,0 +1,105 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  annotations:
+    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kyverno-version: 1.12.3
+    policies.kyverno.io/category: other
+    policies.kyverno.io/description: If Configmaps are mounted in ways which do not
+      naturally allow updates to be live refreshed it may be necessary to modify a
+      Deployment/Daemonset/Statefulset. This policy watches a Configmap and if it
+      changes will write an annotation to one or more target Deployment/Daemonset/Statefulset
+      thus triggering a new rollout and thereby refreshing the referred Configmap.
+      It may be necessary to grant additional privileges to the Kyverno ServiceAccount,
+      via one of the existing ClusterRoleBindings or a new one, so it can modify Deployment/Daemonset/Statefulset.
+    policies.kyverno.io/minversion: 1.12.3
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Deployment/Daemonset/Statefulset
+    policies.kyverno.io/title: Restart objects On Configmap Change
+  labels:
+    dif.tech/argocd: kyverno-dt-prod-usw2-infra
+  name: restart-on-configmap-change
+spec:
+  admission: true
+  background: false
+  mutateExistingOnPolicyUpdate: false
+  rules:
+  - context:
+    - name: matchedConfigmapName
+      variable:
+        jmesPath: request.object.metadata.name
+    - name: encodedData
+      variable:
+        jmesPath: base64_encode('{{ request.object.data }}')
+    - name: encodedOldData
+      variable:
+        jmesPath: base64_encode('{{ request.oldObject.data }}')
+    match:
+      any:
+      - resources:
+          kinds:
+          - ConfigMap
+    mutate:
+      patchStrategicMerge:
+        spec:
+          template:
+            metadata:
+              annotations:
+                kyverno.dif.tech/configmapversion: '{{request.object.metadata.resourceVersion}}'
+      targets:
+      - apiVersion: apps/v1
+        kind: Deployment
+        namespace: '{{request.object.metadata.namespace}}'
+        preconditions:
+          any:
+          - key: '{{target.spec.template.spec.containers[].env[].valueFrom.configMapKeyRef.name}}'
+            operator: AnyIn
+            value: '{{matchedConfigmapName}}'
+          - key: '{{target.spec.template.spec.containers[].envFrom[].configMapRef.name}}'
+            operator: AnyIn
+            value: '{{matchedConfigmapName}}'
+          - key: '{{target.spec.template.spec.volumes[].configMap.name}}'
+            operator: AnyIn
+            value: '{{matchedConfigmapName}}'
+      - apiVersion: apps/v1
+        kind: DaemonSet
+        namespace: '{{request.object.metadata.namespace}}'
+        preconditions:
+          any:
+          - key: '{{target.spec.template.spec.containers[].env[].valueFrom.configMapKeyRef.name}}'
+            operator: AnyIn
+            value: '{{matchedConfigmapName}}'
+          - key: '{{target.spec.template.spec.containers[].envFrom[].configMapRef.name}}'
+            operator: AnyIn
+            value: '{{matchedConfigmapName}}'
+          - key: '{{target.spec.template.spec.volumes[].configMap.name}}'
+            operator: AnyIn
+            value: '{{matchedConfigmapName}}'
+      - apiVersion: apps/v1
+        kind: StatefulSet
+        namespace: '{{request.object.metadata.namespace}}'
+        preconditions:
+          any:
+          - key: '{{target.spec.template.spec.containers[].env[].valueFrom.configMapKeyRef.name}}'
+            operator: AnyIn
+            value: '{{matchedConfigmapName}}'
+          - key: '{{target.spec.template.spec.containers[].envFrom[].configMapRef.name}}'
+            operator: AnyIn
+            value: '{{matchedConfigmapName}}'
+          - key: '{{target.spec.template.spec.volumes[].configMap.name}}'
+            operator: AnyIn
+            value: '{{matchedConfigmapName}}'
+    name: configmap-updated
+    preconditions:
+      all:
+      - key: '{{ request.operation }}'
+        operator: Equals
+        value: UPDATE
+      - key: '{{request.object.metadata.annotations."kyverno.dif.tech/read"}}'
+        operator: Equals
+        value: allow
+      - key: '{{equal_fold(''{{ encodedData }}'', ''{{ encodedOldData }}'')}}'
+        operator: NotEquals
+        value: true
+    skipBackgroundRequests: true
+  validationFailureAction: Audit
